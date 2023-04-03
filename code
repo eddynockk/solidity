@@ -1,0 +1,32 @@
+pragma solidity ^0.8.0;
+
+contract UserRegistry {
+  struct User {
+    address userAddress;
+    string name;
+    string email;
+  }
+
+  mapping(address => User) public users;
+
+  event UserAdded(address indexed userAddress, string name, string email);
+
+  function addUser(address _userAddress, string memory _name, string memory _email) public {
+    require(_userAddress != address(0), "Invalid user address");
+    require(bytes(_name).length > 0, "Name is required");
+    require(bytes(_email).length > 0, "Email is required");
+    require(users[_userAddress].userAddress == address(0), "User already exists");
+
+    User memory user = User(_userAddress, _name, _email);
+    users[_userAddress] = user;
+
+    emit UserAdded(_userAddress, _name, _email);
+  }
+
+  function getUser(address _userAddress) public view returns (User memory) {
+    require(_userAddress != address(0), "Invalid user address");
+    require(users[_userAddress].userAddress != address(0), "User does not exist");
+
+    return users[_userAddress];
+  }
+}
